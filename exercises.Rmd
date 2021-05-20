@@ -6,20 +6,71 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+books <- read_csv('data/books.csv')
 ```
 
- ## Filtering with `filter()`
+## Data Cleaning & Transformation
 
- 1. Use `filter()` to create a data frame called `booksJuv` consisting of `format` books and `subCollection` juvenile materials. 
+### Rename `CALL...ITEM.`
 
- 2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
+1. To rename a variable in `books` we used earlier: 
 
-  ## Solution
-  ```{r, answer=TRUE}
-  booksJuv <- filter(books,
-                   format == "book",
-                   subCollection ==  "juvenile")
-    mean(booksJuv$tot_chkout)
-  ```
+```{r renaming2}
+# rename the . Make sure you return (<-) the output to your 
+# variable, otherwise it will just print it to the console
+books <- rename(books,
+                title = X245.ab)
+```
+
+Fill in the blank. Rename the `CALL...ITEM.` column to `callnumber2`. Remember to add the period to the end of the `CALL...ITEM.`
+
+```{r}
+ books <- ____(books,
+                 callnumber2 = _________)
+```
+
+### Filtering with `filter()`
+
+Earlier we used the `filter()` function to subset the data for only items coded books. 
+
+```{r, comment=FALSE, purl=FALSE}
+bookCheckouts <- filter(books,
+                        format == "book",
+                        tot_chkout > 0)
+```
+
+
+1. Using `filter()`, create a data frame called `booksJuv` consisting of `format` books and `subCollection` juvenile materials. 
+
+2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
+
+### Your answer 
+```{r, answer=TRUE}
+______ <- filter(books,
+                   format == "_____",
+                   ________ ==  "_______")
+___(booksJuv$tot_chkout)
+```
+
+
+### Playing with pipes `%>%`
+
+1. Create a new data frame `booksKids` with these conditions:
+* `filter()` to include `subCollection` juvenile & k-12 materials and `format` books. 
+* `select()` only title, call number, total checkouts, and publication year
+* `arrange()` by total checkouts in descending order
+2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
+
+### Solution
+```{r, answer=TRUE}
+booksKids <- books %>%
+  filter(subCollection %in% c("juvenile", "k-12 materials"),
+  format == "book") %>%
+  select(title, callnumber, tot_chkout, pubyear) %>%
+  arrange(desc(tot_chkout))
+```
+
+
+## Data Viz 
 
 
