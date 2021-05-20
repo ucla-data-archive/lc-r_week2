@@ -1,0 +1,25 @@
+---
+title: "Challenges - Day 2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+ ## Filtering with `filter()`
+
+ 1. Use `filter()` to create a data frame called `booksJuv` consisting of `format` books and `subCollection` juvenile materials. 
+
+ 2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
+
+  ## Solution
+  ```{r, answer=TRUE}
+  booksJuv <- filter(books,
+                   format == "book",
+                   subCollection ==  "juvenile")
+    mean(booksJuv$tot_chkout)
+  ```
+
+
