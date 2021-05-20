@@ -36,7 +36,7 @@ Earlier we used the `filter()` function to subset the data for only items coded 
 ```{r, comment=FALSE, purl=FALSE}
 bookCheckouts <- filter(books,
                         format == "book",
-                        tot_chkout > 0)
+                        tot_chkout  0)
 ```
 
 
@@ -53,7 +53,7 @@ ___(booksJuv$tot_chkout)
 ```
 
 
-### Playing with pipes `%>%`
+### Playing with pipes `%%`
 
 1. Create a new data frame `booksKids` with these conditions:
 * `filter()` to include `subCollection` juvenile & k-12 materials and `format` books. 
@@ -63,14 +63,73 @@ ___(booksJuv$tot_chkout)
 
 ### Solution
 ```{r, answer=TRUE}
-booksKids <- books %>%
+booksKids <- books %%
   filter(subCollection %in% c("juvenile", "k-12 materials"),
-  format == "book") %>%
-  select(title, callnumber, tot_chkout, pubyear) %>%
+  format == "book") %%
+  select(title, callnumber, tot_chkout, pubyear) %%
   arrange(desc(tot_chkout))
 ```
 
 
 ## Data Viz 
 
+## Plotting Exercise
+
+Boxplots are useful summaries, but hide the *shape* of the distribution. For
+example, if the distribution is bimodal, we would not see it in a
+boxplot. An alternative to the boxplot is the violin plot, where the shape
+(of the density of points) is drawn.
+
+- Replace the box plot with a violin plot; see `geom_violin()`.
+
+## Solution
+
+```{r violin-plot, eval=FALSE}
+ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
+  geom_violin(alpha = 0) +
+  geom_jitter(alpha = 0.5, color = "tomato")
+```
+
+- Add color to the `geom_jitter` argument on your boxplot according to the item `subCollection`. *Hint:* If you get the error `object 'subCollection' not found` or `invalid color name 'subCollection'` then consider `color` as an aesthetic mapping.
+
+## Solution
+```{r boxplot-exercise-subcollection, eval=F}
+ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
+  geom_violin(alpha = 0) +
+  geom_jitter(alpha = 0.5, aes(color = subCollection)) +
+  scale_y_log10()
+```
+
+ So far, we've looked at the distribution of checkouts within call number ranges. Try
+ making a new plot to explore the distribution of checkouts within another variable.
+
+ - Still using the `booksHighUsage` data, create a boxplot for `tot_chkout` for each `subCollection`. Overlay the boxplot layer on a jitter layer to show actual measurements. Keep the `scale_y_log10` argument.
+
+  ## Solution
+```{r}
+  ggplot(data = booksHighUsage, aes(x = subCollection, y = tot_chkout)) +
+   geom_boxplot(alpha = 0) +
+   geom_jitter(alpha = 0.5, color = "tomato") +
+   scale_y_log10()
+```
+
+
+### Challenge
+
+ Use the `books2` data to create a bar plot that depicts the number of items in
+each sub-collection, faceted by format.
+ Add the scale_y_log10() argument to
+create a logarithmic scale for easier visibility.
+ Add the following theme
+argument to tilt the axis text diagonal: `theme(axis.text.x = element_text(angle
+= 60, hjust = 1))`
+
+## Solution
+```{r average-weight-time-series, answer=TRUE, purl=FALSE}
+  ggplot(data = books2, aes(x = subCollection)) +
+  geom_bar() +
+  facet_wrap(vars(format)) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
 

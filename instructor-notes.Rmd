@@ -1,0 +1,339 @@
+---
+title: "week2-intro-r: instructor notes"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+books <- read_csv('data/books.csv')
+```
+
+## Setup our working environment
+
+```{r set-up-folders}
+dir.create("data")
+dir.create("data_output")
+dir.create("fig_output")
+```
+
+And download our books data: 
+
+```{r dowload-data}
+download.file("https://ndownloader.figshare.com/files/22031487",
+              "data/books.csv", mode = "wb")
+```
+```{r}
+books <- read_csv("./data/books.csv")
+
+```
+
+## Dataframes 
+
+Inspecting data frames 
+
+```{r inspecting-df}
+dim(books)
+nrow(books)
+ncol(books)
+head(books)
+tail(books)
+names(books)
+#View(books)
+str(books)
+summary(books)
+```
+
+# dollar sign
+
+use to access named columns inside datat frame
+
+* unique, table, duplicated 
+
+```{r}
+unique(books$BCODE2)
+```
+
+```{r}
+table(books$TOT.CHKOUT > 50)
+```
+
+```{r}
+duplicated(books$ISN)  # a TRUE/FALSE vector of duplicated values in the ISN column
+!duplicated(books$ISN)  # you can put an exclamation mark before it to get non-duplicated values
+table(duplicated(books$ISN))  # run a table of duplicated values
+which(duplicated(books$ISN))  # get row numbers of duplicated values
+```
+```{r}
+sum(is.na(books))
+```
+
+```{r}
+colSums(is.na(books))  
+```
+
+```{r}
+table(is.na(books$ISN))
+```
+
+```{r}
+books_no_nas <- na.omit(books)
+```
+
+## Transforming data 
+
+* dplyr gives us function to manipulate transform data frame
+
+rename(): rename columns
+recode(): recode values in a column
+select(): subset columns
+filter(): subset rows on conditions
+mutate(): create new columns by using information from other columns
+group_by() and summarize(): create summary statistics on grouped data
+arrange(): sort results
+count(): count discrete values
+
+```{r}
+glimpse(books)
+```
+
+```{r}
+books <- rename(books, 
+                title = X245.ab)
+```
+
+```{r}
+names(books)
+```
+
+let's rename all the variables
+
+
+```{r}
+books <- rename(books, 
+                author = X245.c,
+                callnumber = CALL...BIBLIO.,
+                isbn = ISN,
+                pubyear = X008.Date.One,
+                subCollection = BCODE1,
+                format = BCODE2,
+                location = LOCATION,
+                tot_chkout = TOT.CHKOUT,
+                loutdate = LOUTDATE,
+                subject = SUBJECT)
+```
+
+```{r}
+names(books)
+```
+
+### Recoding Values 
+
+* we'll use recode() to change values 
+* let's look at the distinct values for `subCollection`
+
+```{r}
+
+distinct(books, subCollection)
+```
+we can no recode: 
+
+```{r}
+books$subCollection <- recode(books$subCollection,
+                              "-" = "general collection",
+                              u = "government documents",
+                              r = "reference",
+                              b = "k-12 materials",
+                              j = "juvenile",
+                              s = "special collections",
+                              c = "computer files",
+                              t = "theses",
+                              a = "archives",
+                              z = "reserves")
+```
+
+```{r}
+books$subCollection
+```
+Let's do the same for `format`:
+
+```{r}
+books$format <- recode(books$format,
+                       a = "book",
+                       e = "serial",
+                       w = "micoform",
+                       s = "e-gov doc",
+                       o = "map",
+                       n = "database",
+                       k = "cd-rom",
+                       m = "image",
+                       "5" = "kit/object",
+                       "4" = "online video")
+```
+
+## Subsetting with `dplyr`'s `filter()`
+
+```{r}
+booksOnly <- filter(books, format == "book")
+```
+
+```{r}
+books$format == "book"
+```
+```{r}
+booksOnly
+```
+
+we can use multiple filter conditions: 
+
+```{r}
+bookCheckouts <- filter(books,
+                        format == "book",
+                        tot_chkout > 0)
+```
+
+
+```{r}
+summary(bookCheckouts$tot_chkout)
+```
+
+## selecting 
+
+```{r}
+booksTitleCheckouts <- select(books, title, tot_chkout)
+booksTitleCheckouts
+```
+```{r}
+# specify the variables you want to remove with a -
+books <- select(books, -location)
+
+# reorder columns, combined with everything()
+booksReordered <- select(books, title, tot_chkout, loutdate, everything())
+```
+
+## ordering data 
+
+```{r}
+booksTitleArrange <- arrange(books, title)
+booksTitleArrange
+```
+```{r}
+booksHighestChkout <- arrange(books, desc(tot_chkout))
+booksHighestChkout
+```
+## creating new variables 
+
+```{r}
+booksLC <- mutate(books,
+                  call_class = str_sub(callnumber, 1, 1))
+
+```
+
+* let's see what str_sub does by iteself 
+
+```{r}
+str_sub('ZZ4 .C64 1999', 1, 1)
+```
+
+* `mutate()` is also helpful to coerce a column from one data type to another. 
+* there are some errors in the pubyear variable–some dates are 19zz or uuuu. 
+* because of this, this variable was read in as a character rather than an integer
+
+
+```{r}
+books <- mutate(books, pubyear = as.integer(pubyear))
+```
+* other uses for mutate: 
+```{r}
+table(books$pubyear)
+```
+
+
+## piping it together 
+
+* pipe operator `%>%` lets us tie together our work above (selecting, mutating, arranging, and filtering)
+* v. helpful b/c it means we don't have to have a bunch of intermediate data objects in our R 
+* short cut: kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> on a PC or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> if you have a Mac.
+* 
+
+```{r pipe}
+myBooks <- books %>%
+  filter(format == "book") %>%
+  select(title, tot_chkout) %>%
+  arrange(desc(tot_chkout))
+myBooks
+```
+
+* You would read this sequence as:
+
+1. Take books then
+2. Use this output as the input to the next function `filter()` then
+3. Use this output as the input to the next function `select()` then
+4. Use this output as the input to the next function `arragen()`
+5. Assign the resulting data frame to `myBooks`
+
+## Split-apply-combine pattern with `summarize`
+
+* split data up into groups by some category in your data
+* apply some analysis to each group 
+* combine the results 
+
+![split-apply-combine](https://miro.medium.com/max/1400/1*w2oGdXv5btEMxAkAsz8fbg.png)
+
+* So to compute the average checkouts by format:
+
+```{r}
+books %>%
+  group_by(format) %>%
+  summarize(mean_checkouts = mean(tot_chkout))
+```
+
+* Here is a more complex example:
+
+```{r}
+books %>% 
+  filter(format == "book") %>%
+  mutate(call_class = str_sub(callnumber, 1, 1)) %>%
+  group_by(call_class) %>%
+  summarize(count = n(),
+            sum_tot_chkout = sum(tot_chkout)) %>%
+  arrange(desc(sum_tot_chkout))
+```
+
+Let's break this down step by step:
+* First we call the `books` data frame
+* We then pipe through `filter()` to include only books
+* We then create a new column with `mutate()` called `call_class` by using the
+`str_sub()` function to keep the first character of the `call_number` variable
+* We then `group_by()` our newly created `call_class` variable
+* We then create two summary columns by using `summarize()` 
+  - take the number `n()` of items per `call_class` and assign it to a column called `count`
+  - take the the `sum()` of `tot_chkout` per `call_class` and assign the result to a column called `sum_tot_chkout`
+* Finally, we arrange `sum_tot_chkout` in descending order, so we can see the
+class with the most total checkouts. We can see it is the `E` class (History of America), followed by `NA` (items with no call number data), followed by `H` (Social Sciences) and `P` (Language and Literature).
+
+## pattern matching (optional if time constrained)
+
+```{r}
+glimpse(books)
+```
+
+* notice all the character variables we have
+* when data cleaning we often need to manipulate these string values to extract content 
+* notice in our title we have trailing slashes that came with whatever system formatting we extracted this data from  
+
+```{r}
+(head(books$title)) 
+(tail(books$title))
+```
+* notice our subtitles also have a "|" after the ":" in the subtitle 
+* we can remove these: 
+
+```{r}
+books %>% 
+  mutate(title_modified = str_remove(title, "/$")) %>% 
+  mutate(title_modified = str_replace(title_modified, ":+\\|", ": ")) %>% 
+  select(title_modified, title)
+```
+* We didn't get all of the subtitles but we can continue to work out the regular expression. 
+
