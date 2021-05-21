@@ -14,15 +14,13 @@ library(tidyverse)
 
 To download to your local RStudio, open or be inside your R project from last week. 
 
-If you don't have a project from last week, follow these instructions. 
-
-### Create a new project
+If you don't have a project from last week, follow these instructions to create a new project. 
 
 1. Under the File menu, click on New project, choose New directory, then New project
 2. Enter the name library_carpentry for this new folder (or “directory”). This will be your working directory for the rest of the day.
 3. Click on Create project
 
-Now, run the `download.file` function we used last week, with the url's to the files we will use in the workshop. 
+Now, run the `download.file` function we used last week, with the URL's to the files we will use in the workshop. 
 
 ```{r rmd-notebook, eval=FALSE}
 download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/week2-intro-r.Rmd', '.')
@@ -32,11 +30,24 @@ download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/ma
 
 ## Let us know if you see those in your Files pane in RStudio? 
 
-* Use the Zoom `yes` feature to 
+* Use the Zoom `yes` featur
 
 You can open the files by clicking on them in the Files pane. 
 
+You will use this document to follow along with me and "live code". We will create code chunks for our R code. This will be fun! 
+
+But first ... 
+
 ## What is RMarkdown? 
+
+* A document type in R that lets you intersperse text, R code, images.
+* Then you can `knit` above & this document will be rendered  into a webpage, a pdf, a word document
+
+This will turn into an in-line image: 
+
+![what it looks like](https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/rmarkdown.png)
+
+Let's try this. Scroll up and change my name to yours, save and press `knit`.
 
 ## Last week review using RMarkdown
 
@@ -71,21 +82,22 @@ We then plotted the data using ggplot:
 ggplot(data = books_plot, mapping = aes(x = call_class)) + geom_bar()
 ```
 
-## This week! 
+## This week's schedule 
 
-### Schedule 
+How to make a table in markdown 
 
 | Topic | Time |
 | ------- | ----- | 
-| Introduction to RMarkdown documents & review | 9:10 am -9:20 am |
-| Reading in data and inspecting dataframes | 9:20 am - 9:30 am |
-| Challenges | 9:45 am - 9:55 am |
-| Break | 9:55 - 10:05 | 
-| Cleaning and preparing data in R | 10:05 am - 10:45 am | 
-| Challenges | 10:45 - 10:55 am |
-| Break | 10:55 - 11:05 am |
-| Visualizing data in R | 11:05 am - noon |
-| Challenges |  | 
-| Break noon | 12:10 |  
+| Introduction to RMarkdown documents & review | 9:10 am -9:30 am |
+| Cleaning and preparing data in R | 9:30 am - 10:15 am | 
+| Challenges | 10:15 - 10:30 am |
+| Break | 10:30 - 10:40 am |
+| Visualizing data in R | 10:40 am - 11:50 |
+| Break | 11:50-noon | 
+| Challenges | 12:00 - 12:20  | 
+| Feedback & Questions | 12:20-12:30 |
+| End | 12:30 | 
+
+## Data Cleaning & Transformation 
 
 
