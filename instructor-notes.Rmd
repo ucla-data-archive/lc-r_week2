@@ -1,6 +1,7 @@
 ---
 title: "week2-intro-r: instructor notes"
 output: html_document
+author: "Tim Dennis"
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +13,7 @@ books2 <- read_csv('data/books_reformatted.csv')
 
 ## Setup our working environment
 
-```{r set-up-folders}
+```{r set-up-folders, eval=FALSE}
 dir.create("data")
 dir.create("data_output")
 dir.create("fig_output")
@@ -24,6 +25,7 @@ And download our books data:
 download.file("https://ndownloader.figshare.com/files/22031487",
               "data/books.csv", mode = "wb")
 ```
+
 ```{r}
 books <- read_csv("./data/books.csv")
 
@@ -47,8 +49,7 @@ summary(books)
 
 # dollar sign
 
-use to access named columns inside datat frame
-
+* use to access named columns inside datat frame
 * unique, table, duplicated 
 
 ```{r}

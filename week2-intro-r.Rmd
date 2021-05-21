@@ -30,18 +30,22 @@ download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/ma
 
 ## Let us know if you see those in your Files pane in RStudio? 
 
-* Use the Zoom `yes` featur
+* Use the Zoom `yes` feature
 
-You can open the files by clicking on them in the Files pane. 
+![yes or no](zoom-yes.png)
+
+Open this file `week2-intro-r.Rmd` file by clicking on them in the Files pane. 
 
 You will use this document to follow along with me and "live code". We will create code chunks for our R code. This will be fun! 
+
+We will use the Rmd document `exercies.Rmd` when we go into breakout room to solve challenges. 
 
 But first ... 
 
 ## What is RMarkdown? 
 
-* A document type in R that lets you intersperse text, R code, images.
-* Then you can `knit` above & this document will be rendered  into a webpage, a pdf, a word document
+* A document type in R that lets you intersperse text, R code, images and the output of our code (this includes visualizations).
+* We use the `knit` button aboveto compile this document and it will then be rendred into either a webpage, a pdf, a word document.
 
 This will turn into an in-line image: 
 
@@ -49,10 +53,10 @@ This will turn into an in-line image:
 
 Let's try this. Scroll up and change my name to yours, save and press `knit`.
 
-## Last week review using RMarkdown
+## Last week brief review using RMarkdown
 
 * At the end of the class we used a cleaned up version of the raw `books.csv` that was derived from the University of Houston–Clear Lake Integrated Library System in 2018.
-* It is a random sample of books from the catalog. 
+* It is a sample of books from the catalog. 
 * It consists of 10,000 observations of 11 variables. 
 * We read in this data from a url like so: 
 
