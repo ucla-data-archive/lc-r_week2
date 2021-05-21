@@ -11,7 +11,101 @@ books <- read_csv('data/books.csv')
 books2 <- read_csv('data/books_reformatted.csv')
 ```
 
-## Setup our working environment
+## To get the RMarkdown documents for today: 
+
+To download to your local RStudio, open or be inside your R project from last week. In windows & mac, you can double click on the file with `.Rproj` extension. 
+
+If you don't have a project from last week, follow these instructions to create a new project. 
+
+1. Under the File menu, click on New project, choose New directory, then New project
+2. Enter the name library_carpentry for this new folder (or “directory”). This will be your working directory for the rest of the day.
+3. Click on Create project
+
+Now, run the `download.file` function we used last week, with the URL's to the files we will use in the workshop. 
+
+```{r rmd-notebook, eval=FALSE}
+download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/week2-intro-r.Rmd', '.')
+download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/exercises.Rmd', '.')
+```
+
+
+## Let us know if you see those in your Files pane in RStudio? 
+
+* Use the Zoom `yes` feature
+
+![yes or no](zoom-yes.png)
+
+Open this file `week2-intro-r.Rmd` file by clicking on them in the Files pane. 
+
+You will use this document to follow along with me and "live code". We will create code chunks for our R code. This will be fun! 
+
+We will use the Rmd document `exercies.Rmd` when we go into breakout room to solve challenges. 
+
+But first ... 
+
+## What is RMarkdown? 
+
+* A document type in R that lets you intersperse text, R code, images and the output of our code (this includes visualizations).
+* We use the `knit` button aboveto compile this document and it will then be rendred into either a webpage, a pdf, a word document.
+
+This will turn into an in-line image: 
+
+![what it looks like](https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/rmarkdown.png)
+
+Let's try this. Scroll up and change my name to yours, save and press `knit`.
+
+## Last week brief review using RMarkdown
+
+* At the end of the class we used a cleaned up version of the raw `books.csv` that was derived from the University of Houston–Clear Lake Integrated Library System in 2018.
+* It is a sample of books from the catalog. 
+* It consists of 10,000 observations of 11 variables. 
+* We read in this data from a url like so: 
+
+```{r books2}
+books2 <- read_csv("https://raw.githubusercontent.com/LibraryCarpentry/lc-r/main/data/books_reformatted.csv")
+```
+
+We looked at the data using `glimpse`. 
+
+```{r glimps-books}
+glimpse(books2)
+```
+
+We created a subset of the data retaining only books that are in the "general collection", "juvenile" and "k12 materials" sub-collections. 
+
+```{r subset-books-subcol}
+books_plot <- books2 %>% 
+  filter(subCollection == "general collection" |
+         subCollection == "juvenile" |
+         subCollection == "k12 materials",
+         !is.na(call_class))
+```
+
+We then plotted the data using ggplot: 
+
+```{r bar-call-class}
+ggplot(data = books_plot, mapping = aes(x = call_class)) + geom_bar()
+```
+
+## This week's schedule 
+
+How to make a table in markdown 
+
+| Topic | Time |
+| ------- | ----- | 
+| Introduction to RMarkdown documents & review | 9:10 am -9:30 am |
+| Cleaning and preparing data in R | 9:30 am - 10:15 am | 
+| Challenges | 10:15 - 10:30 am |
+| Break | 10:30 - 10:40 am |
+| Visualizing data in R | 10:40 am - 11:50 |
+| Break | 11:50-noon | 
+| Challenges | 12:00 - 12:20  | 
+| Feedback & Questions | 12:20-12:30 |
+| End | 12:30 | 
+
+## Data Cleaning & Transformation 
+
+## Make sure our working environment set up
 
 ```{r set-up-folders, eval=FALSE}
 dir.create("data")
@@ -56,46 +150,18 @@ summary(books)
 unique(books$BCODE2)
 ```
 
-```{r, eval=F}
-table(books$TOT.CHKOUT > 50)
-```
-
-```{r, eval=FALSE}
-duplicated(books$ISN)  # a TRUE/FALSE vector of duplicated values in the ISN column
-!duplicated(books$ISN)  # you can put an exclamation mark before it to get non-duplicated values
-table(duplicated(books$ISN))  # run a table of duplicated values
-which(duplicated(books$ISN))  # get row numbers of duplicated values
-```
-
-
-```{r, eval=FALSE}
-sum(is.na(books))
-```
-
-```{r}
-colSums(is.na(books))  
-```
-
-```{r}
-table(is.na(books$ISN))
-```
-
-```{r}
-books_no_nas <- na.omit(books)
-```
-
 ## Transforming data 
 
 * dplyr gives us function to manipulate transform data frame
 
-rename(): rename columns
-recode(): recode values in a column
-select(): subset columns
-filter(): subset rows on conditions
-mutate(): create new columns by using information from other columns
-group_by() and summarize(): create summary statistics on grouped data
-arrange(): sort results
-count(): count discrete values
+`rename()`: rename columns
+`recode()`: recode values in a column
+`select()`: subset columns
+`filter()`: subset rows on conditions
+`mutate()`: create new columns by using information from other columns
+`group_by()` and summarize(): create summary statistics on grouped data
+`arrange()`: sort results
+`count()`: count discrete values
 
 ```{r}
 glimpse(books)
@@ -110,7 +176,7 @@ books <- rename(books,
 names(books)
 ```
 
-let's rename all the variables
+Let's rename all the variables so they make more sense:
 
 
 ```{r}
@@ -127,19 +193,23 @@ books <- rename(books,
                 subject = SUBJECT)
 ```
 
+* The `names()` function will print out our column names: 
+
 ```{r}
 names(books)
 ```
 
 ### Recoding Values 
 
-* we'll use recode() to change values 
-* let's look at the distinct values for `subCollection`
+* We'll use `recode()` to change values 
+* Let's look at the distinct values for `subCollection`
+* The `distinct` function from dplyr will help wiht this
 
 ```{r}
 distinct(books, subCollection)
 ```
-we can no recode: 
+
+* We can now recode our sub-collections from code to meaningful categories: 
 
 ```{r}
 books$subCollection <- recode(books$subCollection,
@@ -155,9 +225,12 @@ books$subCollection <- recode(books$subCollection,
                               z = "reserves")
 ```
 
+* Let's look at the top of our data frame: 
+
 ```{r}
 head(books$subCollection)
 ```
+
 Let's do the same for `format`:
 
 ```{r}
@@ -174,20 +247,30 @@ books$format <- recode(books$format,
                        "4" = "online video")
 ```
 
-## Subsetting with `dplyr`'s `filter()`
+## Subsetting with `dplyr`'s `filter()` funtion 
+
+* The `filter()` function lets us retain rows that meet a condition
+* We can make a new data frame that only contains `books` 
 
 ```{r}
 booksOnly <- filter(books, format == "book")
 ```
 
+* The `==` tests for sameness on each row in the format column
+* We can see how this works by running that part of the code on our format column
+
 ```{r}
 books$format == "book"
 ```
+
+* outputs`TRUE` and `FALSE` based on whether or not its a book
+
 ```{r}
 booksOnly
 ```
 
-we can use multiple filter conditions: 
+* We can use multiple filter conditions together.
+* Make sure you add the comma betwee each condition 
 
 ```{r}
 bookCheckouts <- filter(books,
@@ -195,17 +278,25 @@ bookCheckouts <- filter(books,
                         tot_chkout > 0)
 ```
 
+* we can use the `summary()` function to get some basic stats
 
 ```{r}
 summary(bookCheckouts$tot_chkout)
 ```
 
-## selecting 
+* Any questions? 
+
+## Selecting columns
+
+* We can use the `select()` function to keep or remove columns from our data frame:
 
 ```{r}
 booksTitleCheckouts <- select(books, title, tot_chkout)
 booksTitleCheckouts
 ```
+
+* The `-` subtracts the column. 
+
 ```{r}
 # specify the variables you want to remove with a -
 books <- select(books, -location)
@@ -214,17 +305,40 @@ books <- select(books, -location)
 booksReordered <- select(books, title, tot_chkout, loutdate, everything())
 ```
 
-## ordering data 
+## Ordering data with `arrange()`
+
+* `arrange()` will order columns
+* we can arrange our title column
 
 ```{r}
 booksTitleArrange <- arrange(books, title)
 booksTitleArrange
 ```
+
+* We can also arrange a numeric column
+* Let's order the `tot_checkout` in `desc()` order to see the most checked out books
+* We'll also save this as a data frame for future use
+
 ```{r}
 booksHighestChkout <- arrange(books, desc(tot_chkout))
 booksHighestChkout
 ```
-## creating new variables 
+
+## Creating new variables with `mutate`
+
+* `mutate` lets us create and add variables to our data frame
+* We need to create a new variable that is only the first character of our call number
+* Let's look at the data frame again 
+* We'll use a function `str_sub` to pick off that first character 
+* When I'm working with new functions, I like to see what they do by themselves before I use in another function
+* Let's see what `str_sub` does by itself 
+
+```{r}
+str_sub('ZZ4 .C64 1999', 1, 1)
+```
+
+* Ah, I see 
+* Now we can use in our `mutate` funtion 
 
 ```{r}
 booksLC <- mutate(books,
@@ -232,32 +346,32 @@ booksLC <- mutate(books,
 
 ```
 
-* let's see what str_sub does by iteself 
+* `mutate()` is also helpful to coerce a column from one data type to another. 
+* For instance, there are some errors in the pubyear variable–some dates are `19zz` or `uuuu`.
+* Look at data 
+* Because of this, this variable was read in as a character rather than an integer
+* Let's make it become an integer 
 
 ```{r}
-str_sub('ZZ4 .C64 1999', 1, 1)
+as.integer(c('1', 'uuu'))
 ```
-
-* `mutate()` is also helpful to coerce a column from one data type to another. 
-* there are some errors in the pubyear variable–some dates are 19zz or uuuu. 
-* because of this, this variable was read in as a character rather than an integer
 
 
 ```{r}
 books <- mutate(books, pubyear = as.integer(pubyear))
 ```
-* other uses for mutate: 
+
+* Ok, we can use the handy `table()` function to make a frequency table of our work: 
+
 ```{r}
 table(books$pubyear)
 ```
 
+## Piping it together 
 
-## piping it together 
-
-* pipe operator `%>%` lets us tie together our work above (selecting, mutating, arranging, and filtering)
-* v. helpful b/c it means we don't have to have a bunch of intermediate data objects in our R 
-* short cut: kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> on a PC or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> if you have a Mac.
-* 
+* The pipe operator `%>%` lets us tie together our work above (selecting, mutating, arranging, and filtering)
+* Very helpful because it means we don't have to have create a bunch of intermediate data objects in our R code
+* Short cut: `Ctrl` + `shift` + `M` on a PC or `Cmd` + `Shift` + `M` on a Mac.
 
 ```{r pipe}
 myBooks <- books %>%
@@ -272,14 +386,14 @@ myBooks
 1. Take books then
 2. Use this output as the input to the next function `filter()` then
 3. Use this output as the input to the next function `select()` then
-4. Use this output as the input to the next function `arragen()`
+4. Use this output as the input to the next function `arrange()`
 5. Assign the resulting data frame to `myBooks`
 
 ## Split-apply-combine pattern with `summarize`
 
-* split data up into groups by some category in your data
-* apply some analysis to each group 
-* combine the results 
+* Split data up into groups by some category in your data
+* Apply some analysis to each group 
+* Combine the results 
 
 ![split-apply-combine](https://miro.medium.com/max/1400/1*w2oGdXv5btEMxAkAsz8fbg.png)
 
@@ -353,8 +467,8 @@ booksPlot <- books2 %>%
          !is.na(call_class))
 ```
 
-* now we can use ggplot to plat this 
-* gg stands for grammar of graphics and you can think about in terms of these parts: 
+* Now we can use ggplot to plot this 
+* `gg` stands for grammar of graphics and you can think about in terms of these parts: 
 
 ```{r, eval=FALSE}
 ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +  <GEOM_FUNCTION>()
@@ -374,10 +488,11 @@ ggplot(data = booksPlot)
 ggplot(data = booksPlot, mapping = aes(x = call_class)) # define the x axis aesthetic
 ```
 
-* `aes` maps varables in our dataframe to the plot
+* `aes` maps variables in our data frame to the plot
 * but we aren't there yet, we need to tell ggplot HOW to plot
-* all kinds of optiongs here
+* all kinds of options here
 * but since we're mapping only a single variable to the x axis that limits choices 
+* we can make a bar chart:
 
 ```{r}
 # add a bar geom and set call_class as the x axis
@@ -385,8 +500,8 @@ ggplot(data = booksPlot, mapping = aes(x = call_class)) +
   geom_bar()
 ```
 
-* Ah ok, now we have somthing. H class & P class have most volumnes of books. 
-* let's look at another single variable or univariate plots
+* Ah ok, now we have something. H class & P class have most volumes of books. 
+* Let's look at another single variable or univariate plots that works with numeric variables
 * A histogram is a univariate plot: it shows the frequency counts of each value inside a single variable
 * Let's look at the frequency distribution of checkouts in `booksPlot` 
 
@@ -394,19 +509,21 @@ ggplot(data = booksPlot, mapping = aes(x = call_class)) +
 ggplot(data = booksPlot, mapping = aes(x = tot_chkout)) +
   geom_histogram()
 ```
-* the graph is heavily skewed to checkout - a few titles circulate a lot
-* lots of the books don't
-* we can change the binwidth, that will change the shape of the plot
-* we can also change the scales to help us compare larger and smaller counts
+* The graph is heavily skewed right to checkout - a few titles circulate a lot
+* Lots of the books don't
+* We can change the buckets or binwidths that `geom_hist` uses to count up occurances, this will change the shape of the plot and give us more details about the lower counts 
+* We can also change the scales to help even more, so we can compare larger and smaller counts
 
 ```{r}
 ggplot(data = booksPlot) +
   geom_histogram(aes(x = tot_chkout), binwidth = 10) +
   scale_y_log10()
 ```
-Notice the scale y axis now goes from 0-10, 10-100, 100-1000, and 1000-10000. This is called “logarithmic scale” and is based on orders of magnitude. We can therefore see that over 5,000 books (on the y axis) have between 0-10 checkouts (on the x axis), 1,000 books have 10-20 checkouts, and further down on the x axis, a handful of books have 60-70 checkouts, and a handful more have around 100 checkouts.
+* Notice the scale y axis now goes from 0-10, 10-100, 100-1000, and 1000-10000. 
+* This is called “logarithmic scale” and is based on orders of magnitude.
+* We can therefore see that over 5,000 books (on the y axis) have between 0-10 checkouts (on the x axis), 1,000 books have 10-20 checkouts, and further down on the x axis, a handful of books have 60-70 checkouts, and a handful more have around 100 checkouts.
 
-We can check this with table():
+* We can check this with table():
 
 ```{r}
 table(booksPlot$tot_chkout)
@@ -417,6 +534,7 @@ table(booksPlot$tot_chkout)
 ### Change th geom 
 
 * we can viz the same data different ways by changing the `geom_`
+* let's use the `geom_density` on `tot_chkout`:
 
 ```{r}
 # create a density plot
@@ -428,9 +546,9 @@ ggplot(data = booksPlot) +
 
 # Bivariate geoms 
 
-* two variables 
-* usage items without `NA`s 
-* greateer than 10 checkouts 
+* Two variables 
+* Usage items without `NA`s 
+* Let's greater than 10 checkouts data frame 
 
 ```{r}
 booksHighUsage <- booksPlot %>% 
@@ -438,7 +556,7 @@ booksHighUsage <- booksPlot %>%
          tot_chkout > 10)
 ```
 
-* now we can viz with a scatter plot
+* Now we can viz with a scatter plot
 * There is still so much skew that we retain the logarithmic scale on the y axis with scale_y_log10().
 
 ```{r}
@@ -449,12 +567,11 @@ ggplot(data = booksHighUsage,
   scale_y_log10()
 ```
 
-* note `e` is an easy checkout category not e as in loc subj class
+* Note `e` is an easy checkout category not e as in loc subj class (history)
 * notice the scale on the y axis. 
-* We can obseve a few items of interest here: 
-* No items in the D, J, M, and Z class have more than 30 checkouts. 
+* We can observe a few items of interest here: 
+* Note items in the D, J, M, and Z class have more than 30 checkouts. 
 * An item in the E class has the most checkouts with over 100, but, as noted above, this includes **Easy books** classified with E, not just items with Library of Congress E classification (United States history) an issue we’ll look at further down.
-
 * Just as with univariate plots, we can use different geoms to view various aspects of the data, which in turn reveal different patterns.
 
 ```{r}
@@ -465,10 +582,10 @@ ggplot(data = booksHighUsage,
   scale_y_log10()
 ```
 
-* we can add points over a boxplot 
-* we can add a transparency operator `alpha` - see through 
-* use `geom_jitter()` which will intro some noise 
-* add a color 
+* We can add points over a boxplot 
+* We can add a transparency operator `alpha` - see through 
+* Use `geom_jitter()` which will intro some noise 
+* Add a color 
 
 ```{r}
 ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
@@ -490,7 +607,7 @@ ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
 
 ## Three variables! 
 
-* we can add a third var to add color 
+* we can add a third variable to add color 
 * we do this inside the `aes()`
 
 ```{r}
@@ -503,7 +620,7 @@ ggplot(data = booksHighUsage,
 ```
 
 * ggplot auto assigns hte color to each unique vaulue in the variable 
-* called sacalling 
+* called scaling 
 * juvenile materials make up a large number of `e` and `p` classes
 * let's make a bar chart with a third variable for color 
 

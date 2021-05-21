@@ -53,6 +53,7 @@ bookCheckouts <- filter(books,
 2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
 
 ### Your answer (fill in the blanks)
+
 ```{r,eval=FALSE}
 ______ <- filter(books,
                    format == "_____",
@@ -61,7 +62,7 @@ ___(booksJuv$tot_chkout)
 ```
 
 
-### Playing with pipes `%%`
+### Using pipes `%%`
 
 1. Create a new data frame `booksKids` with these conditions:
 * `filter()` to include `subCollection` juvenile & k-12 materials and `format` books. 
@@ -69,13 +70,20 @@ ___(booksJuv$tot_chkout)
 * `arrange()` by total checkouts in descending order
 2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
 
-### Solution
+### Fill in the blanks 
+
 ```{r, eval=FALSE}
 booksKids <- books %%
-  filter(subCollection %in% c("juvenile", "k-12 materials"),
-  format == "book") %%
-  select(title, callnumber, tot_chkout, pubyear) %%
-  arrange(desc(tot_chkout))
+  filter(________ %in% c("juvenile", "k-12 materials"),
+  _____ == "book") %%
+  select(_____, ______, ______, ____) %%
+  arrange(desc(______))
+```
+
+### Check the mean 
+
+```{r, eval=FALSE}
+mean(__________)
 ```
 
 
@@ -94,18 +102,18 @@ boxplot. An alternative to the boxplot is the violin plot, where the shape
 
 ```{r violin-plot, eval=FALSE}
 ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
-  geom_____(alpha = 0) +
-  geom_jitter(alpha = 0.5, color = "tomato")
+  geom_____(alpha = _) +
+  geom_jitter(alpha = 0.5, color = "____")
 ```
 
 Now, add color to the `geom_jitter` argument on your boxplot according to the item `subCollection`. *Hint:* If you get the error `object 'subCollection' not found` or `invalid color name 'subCollection'` then consider `color` as an aesthetic mapping.
 
-###  Solution
+###  Fill in the blanks:
 ```{r boxplot-exercise-subcollection, eval=F}
-ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
-  geom_violin(alpha = 0) +
-  geom_jitter(alpha = 0.5, aes(color = subCollection)) +
-  scale_y_log10()
+ggplot(data = _______, aes(x = ______, y = tot_chkout)) +
+  geom______(_____ = 0) +
+  geom_jitter(alpha = 0.5, aes(color = ________)) +
+  scale_y_____()
 ```
 
  So far, we've looked at the distribution of checkouts within call number ranges. Try
@@ -115,32 +123,30 @@ ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
 
 ### Solution
 ```{r, eval=FALSE}
-  ggplot(data = booksHighUsage, aes(x = subCollection, y = tot_chkout)) +
-   geom_boxplot(alpha = 0) +
-   geom_jitter(alpha = 0.5, color = "tomato") +
+  ggplot(data = ___________, aes(x = subCollection, y = tot_chkout)) +
+   geom_________(_____ = __) +
+   geom_______(alpha = 0.5, color = "tomato") +
    scale_y_log10()
 ```
 
+### Bar plot chart 
 
-### Challenge
-
- Use the `books2` data to create a bar plot that depicts the number of items in
+1. Use the `books2` data to create a bar plot that depicts the number of items in
 each sub-collection, faceted by format.
- Add the scale_y_log10() argument to
+2. Add the scale_y_log10() argument to
 create a logarithmic scale for easier visibility.
- Add the following theme
-argument to tilt the axis text diagonal: `theme(axis.text.x = element_text(angle
+3 Add the following theme argument to tilt the axis text diagonal: `theme(axis.text.x = element_text(angle
 = 60, hjust = 1))`
 
-###  Solution
+###  Fill in the blanks 
 ```{r average-weight-time-series, eval=FALSE}
-ggplot(data = books2, aes(x = subCollection)) +
-  geom_bar() +
-  facet_wrap(vars(format)) +
+ggplot(data = books2, aes(x = _________n)) +
+  geom____() +
+  facet____(vars(format)) +
   scale_y_log10() +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  ____________________________
 ```
-### Exercise 
+### Final Exercise 
 
 With all of this information in hand, please take another five minutes to either improve one of the plots generated in this exercise or create a beautiful graph of your own. Use the RStudio ggplot2 cheat sheet for inspiration. Here are some ideas:
 
