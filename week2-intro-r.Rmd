@@ -23,8 +23,8 @@ If you don't have a project from last week, follow these instructions to create 
 Now, run the `download.file` function we used last week, with the URL's to the files we will use in the workshop. 
 
 ```{r rmd-notebook, eval=FALSE}
-download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/week2-intro-r.Rmd', '.')
-download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/exercises.Rmd', '.')
+download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/week2-intro-r.Rmd', 'week2-intro-r.Rmd')
+download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/exercises.Rmd', 'exercises.Rmd')
 ```
 
 
