@@ -249,6 +249,10 @@ books$format <- recode(books$format,
 
 ## Subsetting with `dplyr`'s `filter()` funtion 
 
+* Dplyr gives us a number of functions to subset and transform a data frame:
+
+![dplyr functions](./dplyr-verbs.png)
+
 * The `filter()` function lets us retain rows that meet a condition
 * We can make a new data frame that only contains `books` 
 
@@ -288,7 +292,9 @@ summary(bookCheckouts$tot_chkout)
 
 ## Selecting columns
 
-* We can use the `select()` function to keep or remove columns from our data frame:
+* We can use the `select()` function to keep or remove columns from our data frame
+
+![selecting cols](http://swcarpentry.github.io/r-novice-gapminder/fig/13-dplyr-fig1.png)
 
 ```{r}
 booksTitleCheckouts <- select(books, title, tot_chkout)
@@ -428,31 +434,6 @@ Let's break this down step by step:
   - take the the `sum()` of `tot_chkout` per `call_class` and assign the result to a column called `sum_tot_chkout`
 * Finally, we arrange `sum_tot_chkout` in descending order, so we can see the
 class with the most total checkouts. We can see it is the `E` class (History of America), followed by `NA` (items with no call number data), followed by `H` (Social Sciences) and `P` (Language and Literature).
-
-## pattern matching (optional if time constrained)
-
-```{r}
-glimpse(books)
-```
-
-* notice all the character variables we have
-* when data cleaning we often need to manipulate these string values to extract content 
-* notice in our title we have trailing slashes that came with whatever system formatting we extracted this data from  
-
-```{r}
-(head(books$title)) 
-(tail(books$title))
-```
-* notice our subtitles also have a "|" after the ":" in the subtitle 
-* we can remove these: 
-
-```{r}
-books %>% 
-  mutate(title_modified = str_remove(title, "/$")) %>% 
-  mutate(title_modified = str_replace(title_modified, ":+\\|", ": ")) %>% 
-  select(title_modified, title)
-```
-* We didn't get all of the subtitles but we can continue to work out the regular expression. 
 
 ## dataviz 
 
@@ -659,7 +640,7 @@ ggplot(data = booksHighUsage, aes(x = fct_rev(fct_infreq(call_class)))) +
 * we need to install a package called `lubridate` 
 * do you remember how? 
 
-```{r}
+```{r, eval=FALSE}
 install.packages('lubridate')
 ```
 
