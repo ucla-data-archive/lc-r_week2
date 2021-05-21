@@ -7,6 +7,14 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 books <- read_csv('data/books.csv')
+books2 <- read_csv('data/books_reformatted.csv')
+booksHighUsage <- books2 %>%
+  filter(subCollection == "general collection" | 
+           subCollection == "juvenile" | 
+           subCollection == "k-12 materials",
+         !is.na(call_class),
+         !is.na(tot_chkout),
+          tot_chkout > 10)
 ```
 
 ## Data Cleaning & Transformation
@@ -126,10 +134,15 @@ argument to tilt the axis text diagonal: `theme(axis.text.x = element_text(angle
 
 ###  Solution
 ```{r average-weight-time-series, eval=FALSE}
-  ggplot(data = books2, aes(x = subCollection)) +
+ggplot(data = books2, aes(x = subCollection)) +
   geom_bar() +
   facet_wrap(vars(format)) +
   scale_y_log10() +
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
 ```
+### Exercise 
 
+With all of this information in hand, please take another five minutes to either improve one of the plots generated in this exercise or create a beautiful graph of your own. Use the RStudio ggplot2 cheat sheet for inspiration. Here are some ideas:
+
+See if you can make the bars white with black outline.
+Try using a different color palette (see http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/).

@@ -10,6 +10,34 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
+## To get this RMarkdown document: 
+
+To download to your local RStudio, open or be inside your R project from last week. 
+
+If you don't have a project from last week, follow these instructions. 
+
+### Create a new project
+
+1. Under the File menu, click on New project, choose New directory, then New project
+2. Enter the name library_carpentry for this new folder (or “directory”). This will be your working directory for the rest of the day.
+3. Click on Create project
+
+Now, run the `download.file` function we used last week, with the url's to the files we will use in the workshop. 
+
+```{r rmd-notebook, eval=FALSE}
+download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/week2-intro-r.Rmd', '.')
+download.file('https://raw.githubusercontent.com/ucla-data-archive/lc-r_week2/main/exercises.Rmd', '.')
+```
+
+
+## Let us know if you see those in your Files pane in RStudio? 
+
+* Use the Zoom `yes` feature to 
+
+You can open the files by clicking on them in the Files pane. 
+
+## What is RMarkdown? 
+
 ## Last week review using RMarkdown
 
 * At the end of the class we used a cleaned up version of the raw `books.csv` that was derived from the University of Houston–Clear Lake Integrated Library System in 2018.
