@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 books <- read_csv('data/books.csv')
+books2 <- read_csv('data/books_reformatted.csv')
 ```
 
 ## Setup our working environment
@@ -339,4 +340,321 @@ books %>%
 * We didn't get all of the subtitles but we can continue to work out the regular expression. 
 
 ## dataviz 
+
+Let's recreate the `booksPlot` from the end of last week. This dataframe contains only general coll, juvenile & k-12 books & filters out `NA` form call_class. 
+
+```{r}
+# create a new data frame
+booksPlot <- books2 %>%
+  filter(subCollection == "general collection" | 
+           subCollection == "juvenile" | 
+           subCollection == "k-12 materials",
+         !is.na(call_class))
+```
+
+* now we can use ggplot to plat this 
+* gg stands for grammar of graphics and you can think about in terms of these parts: 
+
+```{r, eval=FALSE}
+ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +  <GEOM_FUNCTION>()
+```
+
+* To plot, we need data, aesthic mapping (typically x, y axis) and a geom or geometric objects (line, bar, scatter, etc) 
+* ggplot lets us layer elements on a plot
+
+```{r}
+ggplot(data = booksPlot) 
+```
+
+* gives us a blank canvas 
+* next step is to define mapping 
+
+```{r}
+ggplot(data = booksPlot, mapping = aes(x = call_class)) # define the x axis aesthetic
+```
+
+* `aes` maps varables in our dataframe to the plot
+* but we aren't there yet, we need to tell ggplot HOW to plot
+* all kinds of optiongs here
+* but since we're mapping only a single variable to the x axis that limits choices 
+
+```{r}
+# add a bar geom and set call_class as the x axis
+ggplot(data = booksPlot, mapping = aes(x = call_class)) +
+  geom_bar()
+```
+
+* Ah ok, now we have somthing. H class & P class have most volumnes of books. 
+* let's look at another single variable or univariate plots
+* A histogram is a univariate plot: it shows the frequency counts of each value inside a single variable
+* Let's look at the frequency distribution of checkouts in `booksPlot` 
+
+```{r}
+ggplot(data = booksPlot, mapping = aes(x = tot_chkout)) +
+  geom_histogram()
+```
+* the graph is heavily skewed to checkout - a few titles circulate a lot
+* lots of the books don't
+* we can change the binwidth, that will change the shape of the plot
+* we can also change the scales to help us compare larger and smaller counts
+
+```{r}
+ggplot(data = booksPlot) +
+  geom_histogram(aes(x = tot_chkout), binwidth = 10) +
+  scale_y_log10()
+```
+Notice the scale y axis now goes from 0-10, 10-100, 100-1000, and 1000-10000. This is called “logarithmic scale” and is based on orders of magnitude. We can therefore see that over 5,000 books (on the y axis) have between 0-10 checkouts (on the x axis), 1,000 books have 10-20 checkouts, and further down on the x axis, a handful of books have 60-70 checkouts, and a handful more have around 100 checkouts.
+
+We can check this with table():
+
+```{r}
+table(booksPlot$tot_chkout)
+```
+
+* ggplot gives is a helpful way to see the distribution of checkouts 
+
+### Change th geom 
+
+* we can viz the same data different ways by changing the `geom_`
+
+```{r}
+# create a density plot
+ggplot(data = booksPlot) +
+  geom_density(aes(x = tot_chkout)) +
+  scale_y_log10() +
+  scale_x_log10()
+```
+
+# Bivariate geoms 
+
+* two variables 
+* usage items without `NA`s 
+* greateer than 10 checkouts 
+
+```{r}
+booksHighUsage <- booksPlot %>% 
+  filter(!is.na(tot_chkout),
+         tot_chkout > 10)
+```
+
+* now we can viz with a scatter plot
+* There is still so much skew that we retain the logarithmic scale on the y axis with scale_y_log10().
+
+```{r}
+# scatter plot high usage books by call number class
+ggplot(data = booksHighUsage,
+       aes(x = call_class, y = tot_chkout)) +
+  geom_point() +
+  scale_y_log10()
+```
+
+* note `e` is an easy checkout category not e as in loc subj class
+* notice the scale on the y axis. 
+* We can obseve a few items of interest here: 
+* No items in the D, J, M, and Z class have more than 30 checkouts. 
+* An item in the E class has the most checkouts with over 100, but, as noted above, this includes **Easy books** classified with E, not just items with Library of Congress E classification (United States history) an issue we’ll look at further down.
+
+* Just as with univariate plots, we can use different geoms to view various aspects of the data, which in turn reveal different patterns.
+
+```{r}
+# boxplot plot high usage books by call number class
+ggplot(data = booksHighUsage,
+       aes(x = call_class, y = tot_chkout)) +
+  geom_boxplot() +
+  scale_y_log10()
+```
+
+* we can add points over a boxplot 
+* we can add a transparency operator `alpha` - see through 
+* use `geom_jitter()` which will intro some noise 
+* add a color 
+
+```{r}
+ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
+  geom_boxplot(alpha = 0) +
+  geom_jitter(alpha = 0.5, color = "tomato") +
+  scale_y_log10()
+```
+
+* note the layering effect - dots over boxplot
+* how would we reverse that? 
+* try it
+
+```{r}
+ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
+  geom_jitter(alpha = 0.5, color = "tomato") +
+  geom_boxplot(alpha = 0) +
+  scale_y_log10()
+```
+
+## Three variables! 
+
+* we can add a third var to add color 
+* we do this inside the `aes()`
+
+```{r}
+ggplot(data = booksHighUsage,
+       aes(x = call_class,
+           y = tot_chkout,
+           color = subCollection)) +
+  geom_point() +
+  scale_y_log10()
+```
+
+* ggplot auto assigns hte color to each unique vaulue in the variable 
+* called sacalling 
+* juvenile materials make up a large number of `e` and `p` classes
+* let's make a bar chart with a third variable for color 
+
+```{r}
+ggplot(data = booksHighUsage, aes(x = call_class)) +
+  geom_bar(aes(fill = subCollection))
+```
+
+* stacked bars are hard to read 
+* let's put them side by side 
+
+```{r}
+ggplot(data = booksHighUsage, aes(x = call_class)) +
+  geom_bar(aes(fill = subCollection), position = "dodge")
+```
+
+* the order of the x axis is alpha by default lets change to 
+
+```{r}
+ggplot(data = booksHighUsage, aes(x = fct_infreq(call_class))) +
+  geom_bar()
+
+```
+
+* we can flip this on it's side too
+
+```{r}
+ggplot(data = booksHighUsage, aes(x = fct_rev(fct_infreq(call_class)))) +
+  geom_bar() +
+  coord_flip()
+```
+
+## Time series 
+
+* to create a time series we need to convert our publication date to a date object in R 
+* we need to install a package called `lubridate` 
+* do you remember how? 
+
+```{r}
+install.packages('lubridate')
+```
+
+```{r}
+library(lubridate)
+```
+
+```{r}
+booksPlot <- booksPlot %>%
+  mutate(pubyear_ymd = ymd(pubyear, truncated = 2))  # convert pubyear to a Date object with ymd()
+
+```
+
+```{r}
+class(booksPlot$pubyear)  # integer
+```
+
+```{r}
+class(booksPlot$pubyear_ymd)  # Date
+```
+
+* now we can filter & get counts per year
+
+```{r}
+yearly_counts <- booksPlot %>%
+  filter(!is.na(pubyear_ymd),
+         pubyear_ymd > "1989-01-01" & pubyear_ymd < "2002-01-01") %>%
+  count(pubyear_ymd, subCollection)
+```
+
+```{r}
+ggplot(data = yearly_counts, mapping = aes(x = pubyear_ymd, y = n)) +
+     geom_line()
+```
+
+* this plots all our sub-collections together
+* to get different lines per sub-collection we need to use the group parameter
+
+```{r}
+ggplot(data = yearly_counts, mapping = aes(x = pubyear_ymd, y = n, color = subCollection)) +
+  geom_line()
+
+```
+
+## Faceting 
+
+* small multiple plots by category in our data 
+
+```{r}
+ggplot(data = yearly_counts, mapping = aes(x = pubyear_ymd, y = n)) +
+    geom_line() +
+    facet_wrap(facets = vars(subCollection))
+
+```
+
+* add a theme 
+
+```{r}
+#
+ggplot(data = yearly_counts, mapping = aes(x = pubyear_ymd, y = n)) +
+  geom_line() +
+  facet_wrap(facets = vars(subCollection)) +
+  theme_bw()
+```
+
+## customization 
+
+* we can change the labels, add a title, etc. 
+
+```{r}
+# add labels
+ggplot(data = yearly_counts, mapping = aes(x = pubyear_ymd, y = n)) +
+  geom_line() +
+  facet_wrap(facets = vars(subCollection)) +
+  theme_bw() +
+    labs(title = "Number of High Usage Books per Year of Publication, by Sub-Collection",
+        x = "Year of publication",
+        y = "Number of books")
+```
+
+* skip ->
+
+```{r}
+# create the gray theme
+gray_theme <- theme(axis.text.x = element_text(color = "gray20", size = 12, angle = 45, hjust = 0.5, vjust = 0.5),
+                    axis.text.y = element_text(color = "gray20", size = 12),
+                    text = element_text(size = 16),
+                    plot.title = element_text(hjust = 0.5))
+
+# pass the gray theme to a plot
+ggplot(data = yearly_counts, mapping = aes(x = pubyear_ymd, y = n)) +
+  geom_line() +
+  facet_wrap(facets = vars(subCollection)) +
+  gray_theme +
+  labs(title = "Number of High Usage Books per Year of Publication, \n by Sub-Collection",
+        x = "Year of publication",
+        y = "Number of books")
+```
+
+## save & export 
+
+* we can save from rstudio 
+* we can also save the whole plot as an object in code and hten save 
+
+```{r}
+yearly_counts_plot <- ggplot(data = yearly_counts, mapping = aes(x = pubyear_ymd, y = n)) +
+  geom_line() +
+  facet_wrap(facets = vars(subCollection)) +
+  gray_theme +
+  labs(title = "Number of High Usage Books per Year of Publication, \n by Sub-Collection",
+        x = "Year of publication",
+        y = "Number of books")
+
+ggsave("fig_output/yearly_counts_plot.png", yearly_counts_plot, width = 15, height = 10)
+```
 
