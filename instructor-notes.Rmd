@@ -54,17 +54,19 @@ use to access named columns inside datat frame
 unique(books$BCODE2)
 ```
 
-```{r}
+```{r, eval=F}
 table(books$TOT.CHKOUT > 50)
 ```
 
-```{r}
+```{r, eval=FALSE}
 duplicated(books$ISN)  # a TRUE/FALSE vector of duplicated values in the ISN column
 !duplicated(books$ISN)  # you can put an exclamation mark before it to get non-duplicated values
 table(duplicated(books$ISN))  # run a table of duplicated values
 which(duplicated(books$ISN))  # get row numbers of duplicated values
 ```
-```{r}
+
+
+```{r, eval=FALSE}
 sum(is.na(books))
 ```
 
@@ -133,7 +135,6 @@ names(books)
 * let's look at the distinct values for `subCollection`
 
 ```{r}
-
 distinct(books, subCollection)
 ```
 we can no recode: 
@@ -153,7 +154,7 @@ books$subCollection <- recode(books$subCollection,
 ```
 
 ```{r}
-books$subCollection
+head(books$subCollection)
 ```
 Let's do the same for `format`:
 

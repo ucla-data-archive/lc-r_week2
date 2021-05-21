@@ -22,9 +22,9 @@ books <- rename(books,
                 title = X245.ab)
 ```
 
-Fill in the blank. Rename the `CALL...ITEM.` column to `callnumber2`. Remember to add the period to the end of the `CALL...ITEM.`
+**Fill in the blanks**. Rename the `CALL...ITEM.` column to `callnumber2`. Remember to add the period to the end of the `CALL...ITEM.`
 
-```{r}
+```{r, eval=FALSE}
  books <- ____(books,
                  callnumber2 = _________)
 ```
@@ -33,7 +33,7 @@ Fill in the blank. Rename the `CALL...ITEM.` column to `callnumber2`. Remember t
 
 Earlier we used the `filter()` function to subset the data for only items coded books. 
 
-```{r, comment=FALSE, purl=FALSE}
+```{r, eval=FALSE}
 bookCheckouts <- filter(books,
                         format == "book",
                         tot_chkout  0)
@@ -44,8 +44,8 @@ bookCheckouts <- filter(books,
 
 2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
 
-### Your answer 
-```{r, answer=TRUE}
+### Your answer (fill in the blanks)
+```{r,eval=FALSE}
 ______ <- filter(books,
                    format == "_____",
                    ________ ==  "_______")
@@ -62,7 +62,7 @@ ___(booksJuv$tot_chkout)
 2. Use `mean()` to check the average number of checkouts for the `booksJuv` data frame.
 
 ### Solution
-```{r, answer=TRUE}
+```{r, eval=FALSE}
 booksKids <- books %%
   filter(subCollection %in% c("juvenile", "k-12 materials"),
   format == "book") %%
@@ -73,26 +73,26 @@ booksKids <- books %%
 
 ## Data Viz 
 
-## Plotting Exercise
+### Plotting Exercise
 
 Boxplots are useful summaries, but hide the *shape* of the distribution. For
 example, if the distribution is bimodal, we would not see it in a
 boxplot. An alternative to the boxplot is the violin plot, where the shape
 (of the density of points) is drawn.
 
-- Replace the box plot with a violin plot; see `geom_violin()`.
+**Replace the box plot with a violin plot; see `geom_violin()`.**
 
-## Solution
+### Fill in the blank. 
 
 ```{r violin-plot, eval=FALSE}
 ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
-  geom_violin(alpha = 0) +
+  geom_____(alpha = 0) +
   geom_jitter(alpha = 0.5, color = "tomato")
 ```
 
-- Add color to the `geom_jitter` argument on your boxplot according to the item `subCollection`. *Hint:* If you get the error `object 'subCollection' not found` or `invalid color name 'subCollection'` then consider `color` as an aesthetic mapping.
+Now, add color to the `geom_jitter` argument on your boxplot according to the item `subCollection`. *Hint:* If you get the error `object 'subCollection' not found` or `invalid color name 'subCollection'` then consider `color` as an aesthetic mapping.
 
-## Solution
+###  Solution
 ```{r boxplot-exercise-subcollection, eval=F}
 ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
   geom_violin(alpha = 0) +
@@ -105,8 +105,8 @@ ggplot(data = booksHighUsage, aes(x = call_class, y = tot_chkout)) +
 
  - Still using the `booksHighUsage` data, create a boxplot for `tot_chkout` for each `subCollection`. Overlay the boxplot layer on a jitter layer to show actual measurements. Keep the `scale_y_log10` argument.
 
-  ## Solution
-```{r}
+### Solution
+```{r, eval=FALSE}
   ggplot(data = booksHighUsage, aes(x = subCollection, y = tot_chkout)) +
    geom_boxplot(alpha = 0) +
    geom_jitter(alpha = 0.5, color = "tomato") +
@@ -124,8 +124,8 @@ create a logarithmic scale for easier visibility.
 argument to tilt the axis text diagonal: `theme(axis.text.x = element_text(angle
 = 60, hjust = 1))`
 
-## Solution
-```{r average-weight-time-series, answer=TRUE, purl=FALSE}
+###  Solution
+```{r average-weight-time-series, eval=FALSE}
   ggplot(data = books2, aes(x = subCollection)) +
   geom_bar() +
   facet_wrap(vars(format)) +
